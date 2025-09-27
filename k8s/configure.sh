@@ -1,8 +1,11 @@
 #!/bin/bash
 
+# Find the script's own directory to reliably locate the template file
+SCRIPT_DIR=$(dirname "$0")
+
 echo "--- Kubernetes Backup CronJob Configurator ---"
 echo "Please provide the following details. Press Enter to accept the default value."
-echo
+echo 
 
 # Read user input with defaults
 read -p "Enter Kubernetes Namespace [default]: " NAMESPACE
@@ -12,7 +15,7 @@ read -p "Enter Docker Image Name [your-repo/backup-tool:v1]: " IMAGE_NAME
 IMAGE_NAME=${IMAGE_NAME:-your-repo/backup-tool:v1}
 
 read -p "Enter Cron Schedule [0 2 * * *]: " CRON_SCHEDULE
-CRON_SCHEDULE=${CRON_SCHEDULE:-0 2 * * * }
+CRON_SCHEDULE=${CRON_SCHEDULE:-0 2 * * * } 
 
 read -p "Enter Backup Path on Node [/mnt/k8s-backups]: " BACKUP_PATH
 BACKUP_PATH=${BACKUP_PATH:-/mnt/k8s-backups}
@@ -37,8 +40,8 @@ if [ -z "$DB_PASSWORD" ]; then
     exit 1
 fi
 
-TEMPLATE_FILE="k8s-manifests.template.yaml"
-OUTPUT_FILE="k8s-manifests.yaml"
+TEMPLATE_FILE="${SCRIPT_DIR}/k8s-manifests.template.yaml"
+OUTPUT_FILE="${SCRIPT_DIR}/k8s-manifests.yaml"
 
 if [ ! -f "$TEMPLATE_FILE" ]; then
     echo "ERROR: Template file not found: ${TEMPLATE_FILE}"

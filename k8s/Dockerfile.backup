@@ -1,0 +1,13 @@
+# Use the Debian-based postgres image which includes bash and all client tools
+FROM postgres:16-bookworm
+
+# The base image already contains the necessary tools.
+
+WORKDIR /app
+
+COPY backup.sh .
+
+RUN chmod +x ./backup.sh
+
+# Use an absolute path for robustness
+ENTRYPOINT ["/app/backup.sh"]

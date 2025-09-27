@@ -13,16 +13,16 @@ DB_HOST="localhost"
 DB_PORT="5432"
 LOG_FILE="db_backup.log"
 
-# --- Script Variables ---
-TEMP_DIR=$(mktemp -d)
+# This will be set inside main() after the --help check
+TEMP_DIR=""
 
 # --- Functions ---
 log_message() {
   # Check if LOG_FILE is set and not empty, otherwise just echo
   if [ -n "${LOG_FILE:-}" ]; then
-    echo "$(date +"%Y-%m-%d %H:%M:%S") - $1" | tee -a "${LOG_FILE}"
+    echo -e "$(date +"%Y-%m-%d %H:%M:%S") - $1" | tee -a "${LOG_FILE}"
   else
-    echo "$(date +"%Y-%m-%d %H:%M:%S") - $1"
+    echo -e "$(date +"%Y-%m-%d %H:%M:%S") - $1"
   fi
 }
 
@@ -47,7 +47,8 @@ display_help() {
 }
 
 cleanup() {
-  if [ -d "${TEMP_DIR}" ]; then
+  # Only clean up if TEMP_DIR was created
+  if [ -n "${TEMP_DIR:-}" ] && [ -d "${TEMP_DIR}" ]; then
     log_message "INFO: Cleaning up temporary files..."
     rm -rf "${TEMP_DIR}"
   fi
@@ -62,8 +63,12 @@ main() {
     display_help
   fi
 
+  # Now that we are past the --help check, create the temp directory
+  TEMP_DIR=$(mktemp -d)
+
   # Parse command-line options
-  while getopts ":d:u:h:p:l:" opt; do
+  while getopts ":d:u:h:p:l:" opt;
+ do
     case ${opt} in
       d ) BACKUP_DIR=$OPTARG;;
       u ) DB_USER=$OPTARG;;
@@ -76,6 +81,8 @@ main() {
   shift $((OPTIND - 1))
 
   # --- Start Execution ---
+  log_message ""
+  log_message "==================== NEW BACKUP RUN ===================="
   log_message "INFO: --- Backup process started for ${DB_HOST}:${DB_PORT} ---"
 
   mkdir -p "${BACKUP_DIR}"
