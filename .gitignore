@@ -1,0 +1,3 @@
+*.envk8s-manifests.yaml
+*.env
+.pgpass

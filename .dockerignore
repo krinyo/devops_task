@@ -1,0 +1,9 @@
+.git
+.gitignore
+
+# Local backup artifacts
+backups/
+db_backup.log
+
+# Local test containers and data
+pg-test/

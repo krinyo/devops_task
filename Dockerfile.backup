@@ -1,0 +1,17 @@
+# Use a lightweight base image
+FROM alpine:latest
+
+# Install necessary dependencies: postgresql-client for pg_dump and coreutils for mktemp
+RUN apk update && apk add --no-cache postgresql-client coreutils
+
+# Set a working directory
+WORKDIR /app
+
+# Copy the backup script into the image
+COPY backup.sh .
+
+# Make the script executable
+RUN chmod +x ./backup.sh
+
+# Set the script as the entrypoint
+ENTRYPOINT ["./backup.sh"]
